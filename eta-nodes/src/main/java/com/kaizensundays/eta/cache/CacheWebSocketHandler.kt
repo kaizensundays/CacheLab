@@ -1,5 +1,7 @@
 package com.kaizensundays.eta.cache
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 import reactor.core.publisher.Sinks
 
 /**
@@ -9,12 +11,22 @@ import reactor.core.publisher.Sinks
  */
 class CacheWebSocketHandler(private val handler: CacheCommandHandler) : AbstractWebSocketHandler() {
 
-    override fun handle(msg: ByteArray, outbound: Sinks.Many<ByteArray>) {
-        logger.debug("msg={}", String(msg))
+    val jsonConverter = JsonMapper.builder()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .build()
 
-        val result = handler.execute(String(msg))
+    override fun handle(bytes: ByteArray, outbound: Sinks.Many<ByteArray>) {
+        logger.debug("msg={}", String(bytes))
 
-        outbound.tryEmitNext(result.toByteArray())
+        val msg = jsonConverter.readValue(bytes, Msg::class.java)
+
+        if (msg is CacheValue) {
+            val result = handler.execute(msg.value ?: "")
+            outbound.tryEmitNext(result.toByteArray())
+        } else {
+            handler.execute(msg)
+        }
+
     }
 
 }

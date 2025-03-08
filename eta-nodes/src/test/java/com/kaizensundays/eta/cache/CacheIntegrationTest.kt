@@ -1,5 +1,7 @@
 package com.kaizensundays.eta.cache
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.kaizensundays.messaging.DefaultLoadBalancer
 import com.kaizensundays.messaging.Instance
 import com.kaizensundays.messaging.LoadBalancer
@@ -27,6 +29,10 @@ import kotlin.test.assertTrue
 @ContextConfiguration(locations = ["/CacheIntegrationTest.xml"])
 class CacheIntegrationTest : IntegrationTestSupport() {
 
+    private val jsonConverter = JsonMapper.builder()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .build()
+
     private lateinit var loadBalancer: LoadBalancer
 
     private lateinit var producer: WebFluxProducer
@@ -47,7 +53,7 @@ class CacheIntegrationTest : IntegrationTestSupport() {
     @Test
     fun send() {
 
-        val msg = "test".toByteArray()
+        val msg = jsonConverter.writeValueAsString(CacheValue("test")).toByteArray()
 
         val topic = URI("ws:/default/ws?maxAttempts=3")
 
@@ -62,7 +68,7 @@ class CacheIntegrationTest : IntegrationTestSupport() {
     @Test
     fun ping() {
 
-        val msg = "ping".toByteArray()
+        val msg = jsonConverter.writeValueAsString(CacheValue("ping")).toByteArray()
 
         val topic = URI("ws:/default/ws?maxAttempts=3")
 

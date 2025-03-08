@@ -1,5 +1,7 @@
 package com.kaizensundays.eta.cache
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 import com.kaizensundays.messaging.WebFluxProducer
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -18,6 +20,10 @@ import java.util.concurrent.TimeUnit
 class TestDriver(private val producer: WebFluxProducer) {
 
     private val logger: Logger = LoggerFactory.getLogger(javaClass)
+
+    private val jsonConverter = JsonMapper.builder()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .build()
 
     private val config = Config()
 
@@ -82,7 +88,8 @@ class TestDriver(private val producer: WebFluxProducer) {
             .delayElements(Duration.ofMillis(config.commandDelayMs))
 
         val pub = commands.blockingQueueBuffer(1_000_000)
-            .map { it.toByteArray() }
+            .map { cmd -> jsonConverter.writeValueAsString(CacheValue(cmd)) }
+            .map { json -> json.toByteArray() }
 
         val total = keyNum * messagesPerKey * rounds
 
