@@ -53,7 +53,7 @@ class CacheIntegrationTest : IntegrationTestSupport() {
     @Test
     fun send() {
 
-        val msg = jsonConverter.writeValueAsString(CacheValue("test")).toByteArray()
+        val msg = jsonConverter.writeValueAsString(CacheValue("test", 0)).toByteArray()
 
         val topic = URI("ws:/default/ws?maxAttempts=3")
 
@@ -68,7 +68,7 @@ class CacheIntegrationTest : IntegrationTestSupport() {
     @Test
     fun ping() {
 
-        val msg = jsonConverter.writeValueAsString(CacheValue("ping")).toByteArray()
+        val msg = jsonConverter.writeValueAsString(CacheValue("ping", 0)).toByteArray()
 
         val topic = URI("ws:/default/ws?maxAttempts=3")
 

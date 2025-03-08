@@ -21,7 +21,7 @@ class CacheCommandHandlerTest {
     @Test
     fun put() {
 
-        handler.execute(CachePut("a", "A"))
+        handler.execute(CachePut("a", "A", 0))
 
         verify(cache).put("a", "A")
     }
@@ -31,7 +31,7 @@ class CacheCommandHandlerTest {
 
         whenever(cache.get("a")).thenReturn("A")
 
-        val res = handler.execute(CacheGet("a"))
+        val res = handler.execute(CacheGet("a", 0))
         assertTrue(res is CacheValue)
         assertEquals("A", res.value)
 

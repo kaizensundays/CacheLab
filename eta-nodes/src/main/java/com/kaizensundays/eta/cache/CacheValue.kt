@@ -5,7 +5,8 @@ package com.kaizensundays.eta.cache
  *
  * @author Sergey Chuykov
  */
-class CacheValue(val value: String?) : Response(0, "Ok", MsgType.CacheValue) {
+class CacheValue(val value: String?, seqNum: Int) : Response(0, "Ok", seqNum, MsgType.CacheValue) {
 
-    constructor() : this(null)
+    constructor() : this(null, 0)
+
 }

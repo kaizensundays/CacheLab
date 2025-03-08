@@ -8,8 +8,9 @@ package com.kaizensundays.eta.cache
 open class Response(
     val code: Int,
     val text: String,
+    seqNum: Int,
     type: String = MsgType.Response
-) : Msg(type) {
+) : Msg(type, seqNum) {
 
-    constructor() : this(0, "Ok")
+    constructor() : this(0, "Ok", 0)
 }

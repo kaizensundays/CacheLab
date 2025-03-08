@@ -16,16 +16,18 @@ class CacheWebSocketHandler(private val handler: CacheCommandHandler) : Abstract
         .build()
 
     override fun handle(bytes: ByteArray, outbound: Sinks.Many<ByteArray>) {
-        logger.debug("msg={}", String(bytes))
+        val json = String(bytes)
+        logger.debug("msg={}", json)
 
-        val msg = jsonConverter.readValue(bytes, Msg::class.java)
+        val msg = jsonConverter.readValue(json, Msg::class.java)
 
-        if (msg is CacheValue) {
-            val result = handler.execute(msg.value ?: "")
-            outbound.tryEmitNext(result.toByteArray())
+        val result = if (msg is CacheValue) {
+            handler.execute(msg.value ?: "")
         } else {
-            handler.execute(msg)
+            val response = handler.execute(msg)
+            jsonConverter.writeValueAsString(response)
         }
+        outbound.tryEmitNext(result.toByteArray())
 
     }
 

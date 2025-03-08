@@ -20,6 +20,40 @@ class ObjectMappingTest {
     fun writeValue(obj: Any): String {
         return jsonConverter.writeValueAsString(obj).replace("\r\n", "\n")
     }
+    // {
+    //  "type" : "CachePut",
+    //  "seqNum" : 0,
+    //  "key" : "0",
+    //  "value" : "000"
+    //}
+
+    @Test
+    fun convertCachePut() {
+
+        val json = listOf(
+            """{
+            |  "type" : "CachePut",
+            |  "seqNum" : 0,
+            |  "key" : "0",
+            |  "value" : "000"
+        |}""",
+            """{
+            |  "type" : "CachePut",
+            |  "seqNum" : 1,
+            |  "key" : "1",
+            |  "value" : "001"
+        |}""",
+        ).map { it.trimMargin() }
+
+        listOf(
+            CachePut("0", "000", 0),
+            CachePut("1", "001", 1),
+        ).forEachIndexed { i, obj ->
+            assertEquals(json[i], writeValue(obj))
+            val msg = jsonConverter.readValue(json[i], Msg::class.java)
+            assertTrue(msg is CachePut)
+        }
+    }
 
     @Test
     fun convertResponse() {
@@ -40,8 +74,8 @@ class ObjectMappingTest {
         ).map { it.trimMargin() }
 
         listOf(
-            Response(0, "Ok"),
-            Response(1, "System Error"),
+            Response(0, "Ok", 0),
+            Response(1, "System Error", 0),
         ).forEachIndexed { i, res ->
             assertEquals(json[i], writeValue(res))
             val msg = jsonConverter.readValue(json[i], Msg::class.java)
@@ -55,7 +89,7 @@ class ObjectMappingTest {
         val json = listOf(
             """{
             |  "type" : "CacheValue",
-            |  "seqNum" : 0,
+            |  "seqNum" : 1,
             |  "code" : 0,
             |  "text" : "Ok",
             |  "value" : "A"
@@ -63,7 +97,7 @@ class ObjectMappingTest {
         """,
             """{
             |  "type" : "CacheValue",
-            |  "seqNum" : 0,
+            |  "seqNum" : 3,
             |  "code" : 0,
             |  "text" : "Ok",
             |  "value" : "C"
@@ -72,8 +106,8 @@ class ObjectMappingTest {
         ).map { it.trimMargin() }
 
         listOf(
-            CacheValue("A"),
-            CacheValue("C"),
+            CacheValue("A", 1),
+            CacheValue("C", 3),
         ).forEachIndexed { i, obj ->
             assertEquals(json[i], writeValue(obj))
             val msg = jsonConverter.readValue(json[i], Msg::class.java)

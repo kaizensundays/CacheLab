@@ -66,16 +66,16 @@ class CacheCommandHandler(private val cache: EtaCache<String, String>) : Initial
         return when (msg) {
             is CacheGet -> {
                 val value = cache[msg.key]
-                CacheValue(value)
+                CacheValue(value, 0)
             }
 
             is CachePut -> {
                 cache.put(msg.key, msg.value)
-                Response(0, "Ok")
+                Response(0, "Ok", 0)
             }
 
             else -> {
-                Response(1, "Unexpected message type: ${msg.javaClass.canonicalName}")
+                Response(1, "Unexpected message type: ${msg.javaClass.canonicalName}", 0)
             }
         }
     }

@@ -5,4 +5,8 @@ package com.kaizensundays.eta.cache
  *
  * @author Sergey Chuykov
  */
-class CacheGet(val key: String) : Msg(MsgType.CacheGet)
+class CacheGet(val key: String, seqNum: Int) : Msg(MsgType.CacheGet, seqNum) {
+
+    constructor() : this("", 0)
+
+}

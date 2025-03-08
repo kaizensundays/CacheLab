@@ -5,4 +5,8 @@ package com.kaizensundays.eta.cache
  *
  * @author Sergey Chuykov
  */
-class CachePut(val key: String, val value: String) : Msg(MsgType.CachePut)
+class CachePut(val key: String, val value: String, seqNum: Int) : Msg(MsgType.CachePut, seqNum) {
+
+    constructor() : this("", "", 0)
+
+}

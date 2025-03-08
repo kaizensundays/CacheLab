@@ -19,6 +19,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
     JsonSubTypes.Type(value = CacheGet::class, name = MsgType.CacheGet),
     JsonSubTypes.Type(value = CachePut::class, name = MsgType.CachePut),
 )
-abstract class Msg(val type: String) {
-    val seqNum: Int = 0
-}
+abstract class Msg(val type: String, val seqNum: Int)

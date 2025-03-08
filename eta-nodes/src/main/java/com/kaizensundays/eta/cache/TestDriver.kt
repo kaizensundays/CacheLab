@@ -50,8 +50,14 @@ class TestDriver(private val producer: WebFluxProducer) {
         return Flux.create { sink ->
             (0 until rounds).forEach { round ->
                 (0 until keyNum).forEach { key ->
-                    sink.next(String.format("put:%d:" + config.valueFormat(keyMultiplier), key, round * keyMultiplier + key))
-                    sink.next(String.format("get:%d", key))
+                    //sink.next(String.format("put:%d:" + config.valueFormat(keyMultiplier), key, round * keyMultiplier + key))
+                    val valueFormat = config.valueFormat(keyMultiplier)
+                    val value = String.format(valueFormat, round * keyMultiplier + key)
+                    val put = jsonConverter.writeValueAsString(CachePut(key.toString(), value, 0))
+                    sink.next(put)
+                    //sink.next(String.format("get:%d", key))
+                    val get = jsonConverter.writeValueAsString(CacheGet(key.toString(), 0))
+                    sink.next(get)
                 }
             }
             sink.complete()
@@ -88,7 +94,7 @@ class TestDriver(private val producer: WebFluxProducer) {
             .delayElements(Duration.ofMillis(config.commandDelayMs))
 
         val pub = commands.blockingQueueBuffer(1_000_000)
-            .map { cmd -> jsonConverter.writeValueAsString(CacheValue(cmd)) }
+            //.map { cmd -> jsonConverter.writeValueAsString(CacheValue(cmd)) }
             .map { json -> json.toByteArray() }
 
         val total = keyNum * messagesPerKey * rounds
