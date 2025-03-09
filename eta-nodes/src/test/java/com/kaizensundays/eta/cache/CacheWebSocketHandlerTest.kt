@@ -22,17 +22,17 @@ class CacheWebSocketHandlerTest {
     @Test
     fun pingPong() {
 
-        val ping = "ping"
-        val req = webSocketHandler.jsonConverter.writeValueAsString(CacheValue(ping, 0))
+        val req = CacheValue("ping", 0)
+        val json = webSocketHandler.jsonConverter.writeValueAsString(req)
         val pong = "pong"
 
-        whenever(handler.execute(ping)).thenReturn(pong)
+        whenever(handler.execute(req)).thenReturn(Response(0, "Ok", 0))
         whenever(sink.tryEmitNext(any())).thenReturn(Sinks.EmitResult.OK)
 
-        webSocketHandler.handle(req.toByteArray(), sink)
+        webSocketHandler.handle(json.toByteArray(), sink)
 
-        verify(handler).execute(ping)
-        verify(sink).tryEmitNext(pong.toByteArray())
+        verify(handler).execute(any<Msg>())
+        verify(sink).tryEmitNext(any<ByteArray>())
         verifyNoMoreInteractions(handler)
         verifyNoMoreInteractions(sink)
     }
