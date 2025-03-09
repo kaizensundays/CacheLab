@@ -1,5 +1,7 @@
 package com.kaizensundays.eta.cache
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.json.JsonMapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.web.reactive.socket.WebSocketHandler
@@ -17,15 +19,25 @@ abstract class AbstractWebSocketHandler : WebSocketHandler {
 
     protected val logger: Logger = LoggerFactory.getLogger(javaClass)
 
+    val jsonConverter = JsonMapper.builder()
+        .enable(SerializationFeature.INDENT_OUTPUT)
+        .build()
+
     private val outbound = Sinks.many().multicast().directBestEffort<ByteArray>()
 
     abstract fun handle(msg: ByteArray, outbound: Sinks.Many<ByteArray>)
 
     private fun handle(message: WebSocketMessage) {
-        val data = message.payload
-        val msg = ByteArray(data.readableByteCount())
-        data.read(msg)
-        handle(msg, outbound)
+        try {
+            val data = message.payload
+            val msg = ByteArray(data.readableByteCount())
+            data.read(msg)
+            handle(msg, outbound)
+        } catch (e: Throwable) {
+            logger.error("", e)
+            val result = jsonConverter.writeValueAsString(Response(1, e.message ?: "?", 0))
+            outbound.tryEmitNext(result.toByteArray())
+        }
     }
 
     override fun handle(session: WebSocketSession): Mono<Void> {

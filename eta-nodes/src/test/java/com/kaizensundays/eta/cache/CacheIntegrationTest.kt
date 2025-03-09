@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
-import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import java.net.URI
 import java.time.Duration
@@ -68,19 +67,19 @@ class CacheIntegrationTest : IntegrationTestSupport() {
     @Test
     fun ping() {
 
-        val msg = jsonConverter.writeValueAsString(CacheValue("ping", 0)).toByteArray()
+        var bytes = jsonConverter.writeValueAsString(Heartbeat()).toByteArray()
 
         val topic = URI("ws:/default/ws?maxAttempts=3")
 
-        val resp = producer.request(topic, msg)
+        val resp = producer.request(topic, bytes)
             .take(1)
             .map { String(it) }
-            .collectList()
-            .switchIfEmpty(Mono.just(emptyList()))
-            .block(Duration.ofSeconds(10))
+            .blockLast(Duration.ofSeconds(10))
 
         assertNotNull(resp)
-        assertEquals(listOf("Ok"), resp)
+        val msg = jsonConverter.readValue(resp, Msg::class.java)
+        assertTrue(msg is Response)
+        assertEquals("Ok", msg.text)
     }
 
     @Test

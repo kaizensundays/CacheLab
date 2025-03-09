@@ -74,6 +74,10 @@ class CacheCommandHandler(private val cache: EtaCache<String, String>) : Initial
                 Response(0, "Ok", 0)
             }
 
+            is Heartbeat -> {
+                Response(0, "Ok", 0)
+            }
+
             else -> {
                 Response(1, "Unexpected message type: ${msg.javaClass.canonicalName}", 0)
             }

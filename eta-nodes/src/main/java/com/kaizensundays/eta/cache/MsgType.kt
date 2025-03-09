@@ -8,6 +8,8 @@ package com.kaizensundays.eta.cache
 @Suppress("ConstPropertyName")
 object MsgType {
 
+    const val Heartbeat = "Heartbeat"
+
     const val CacheGet = "CacheGet"
     const val CachePut = "CachePut"
 
