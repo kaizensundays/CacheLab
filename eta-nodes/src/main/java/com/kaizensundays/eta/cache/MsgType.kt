@@ -9,6 +9,7 @@ package com.kaizensundays.eta.cache
 object MsgType {
 
     const val Heartbeat = "Heartbeat"
+    const val LogLevel = "LogLevel"
 
     const val CacheGet = "CacheGet"
     const val CachePut = "CachePut"

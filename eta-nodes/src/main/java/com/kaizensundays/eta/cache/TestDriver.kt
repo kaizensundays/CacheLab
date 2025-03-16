@@ -47,16 +47,16 @@ class TestDriver(private val producer: WebFluxProducer) {
     fun commands(keyNum: Int, keyMultiplier: Int, rounds: Int): Flux<String> {
         require(keyNum <= keyMultiplier) { "The number of keys in a round cannot be greater then keyMultiplier" }
 
+        var seqNum = 0
+
         return Flux.create { sink ->
             (0 until rounds).forEach { round ->
                 (0 until keyNum).forEach { key ->
-                    //sink.next(String.format("put:%d:" + config.valueFormat(keyMultiplier), key, round * keyMultiplier + key))
                     val valueFormat = config.valueFormat(keyMultiplier)
                     val value = String.format(valueFormat, round * keyMultiplier + key)
-                    val put = jsonConverter.writeValueAsString(CachePut(key.toString(), value, 0))
+                    val put = jsonConverter.writeValueAsString(CachePut(key.toString(), value, ++seqNum))
                     sink.next(put)
-                    //sink.next(String.format("get:%d", key))
-                    val get = jsonConverter.writeValueAsString(CacheGet(key.toString(), 0))
+                    val get = jsonConverter.writeValueAsString(CacheGet(key.toString(), ++seqNum))
                     sink.next(get)
                 }
             }
@@ -84,17 +84,11 @@ class TestDriver(private val producer: WebFluxProducer) {
 
     fun execute(keyNum: Int, messagesPerKey: Int, rounds: Int): Flux<ByteArray> {
 
-        /*
-                val loadBalancer = DefaultLoadBalancer(listOf(Instance("localhost", port)))
-                val producer = WebFluxProducer(loadBalancer)
-        */
-
         val commands = commands(keyNum, config.keyMultiplier(), rounds)
             .delaySubscription(Duration.ofMillis(config.commandInitialDelayMs))
             .delayElements(Duration.ofMillis(config.commandDelayMs))
 
         val pub = commands.blockingQueueBuffer(1_000_000)
-            //.map { cmd -> jsonConverter.writeValueAsString(CacheValue(cmd)) }
             .map { json -> json.toByteArray() }
 
         val total = keyNum * messagesPerKey * rounds

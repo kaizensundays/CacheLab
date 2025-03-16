@@ -2,6 +2,7 @@ package com.kaizensundays.eta.cache
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.kaizensundays.eta.context.Logger
 import com.kaizensundays.messaging.DefaultLoadBalancer
 import com.kaizensundays.messaging.Instance
 import com.kaizensundays.messaging.LoadBalancer
@@ -13,6 +14,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import reactor.core.publisher.Flux
 import reactor.test.StepVerifier
 import java.net.URI
 import java.time.Duration
@@ -67,12 +69,20 @@ class CacheIntegrationTest : IntegrationTestSupport() {
     @Test
     fun ping() {
 
-        var bytes = jsonConverter.writeValueAsString(Heartbeat()).toByteArray()
+        val messages = arrayOf(
+            Heartbeat(),
+            LogLevel(Logger.DEBUG),
+            Heartbeat(),
+        )
+
+        val msgs = Flux.fromArray(messages)
+            .map { msg -> jsonConverter.writeValueAsString(msg).toByteArray() }
+
 
         val topic = URI("ws:/default/ws?maxAttempts=3")
 
-        val resp = producer.request(topic, bytes)
-            .take(1)
+        val resp = producer.request(topic, msgs)
+            .take(messages.size.toLong())
             .map { String(it) }
             .blockLast(Duration.ofSeconds(10))
 

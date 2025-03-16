@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = Heartbeat::class, name = MsgType.Heartbeat),
+    JsonSubTypes.Type(value = LogLevel::class, name = MsgType.LogLevel),
     JsonSubTypes.Type(value = Response::class, name = MsgType.Response),
     JsonSubTypes.Type(value = CacheValue::class, name = MsgType.CacheValue),
     JsonSubTypes.Type(value = CacheGet::class, name = MsgType.CacheGet),

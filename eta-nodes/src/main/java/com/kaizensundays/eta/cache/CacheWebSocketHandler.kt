@@ -15,6 +15,10 @@ class CacheWebSocketHandler(private val handler: CacheCommandHandler) : Abstract
 
         val msg = jsonConverter.readValue(json, Msg::class.java)
 
+        if (msg is LogLevel) {
+            logger.level = msg.level
+        }
+
         val response = handler.execute(msg)
         val result = jsonConverter.writeValueAsString(response)
 

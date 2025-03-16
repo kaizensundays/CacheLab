@@ -2,8 +2,8 @@ package com.kaizensundays.eta.cache
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.kaizensundays.eta.context.Logger
 import org.springframework.web.reactive.socket.WebSocketHandler
 import org.springframework.web.reactive.socket.WebSocketMessage
 import org.springframework.web.reactive.socket.WebSocketSession
@@ -17,10 +17,11 @@ import reactor.core.publisher.Sinks
  */
 abstract class AbstractWebSocketHandler : WebSocketHandler {
 
-    protected val logger: Logger = LoggerFactory.getLogger(javaClass)
+    protected val logger = Logger(javaClass)
 
     val jsonConverter = JsonMapper.builder()
         .enable(SerializationFeature.INDENT_OUTPUT)
+        .addModule(KotlinModule.Builder().build())
         .build()
 
     private val outbound = Sinks.many().multicast().directBestEffort<ByteArray>()
