@@ -1,6 +1,7 @@
 package com.kaizensundays.eta.cache
 
 import com.kaizensundays.eta.context.Context
+import com.kaizensundays.eta.context.notImplemented
 import java.net.URI
 import java.util.*
 import javax.cache.Cache
@@ -46,19 +47,19 @@ class CacheManagerImpl(
     }
 
     override fun getCachingProvider(): CachingProvider {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun getURI(): URI {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun getClassLoader(): ClassLoader {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun getProperties(): Properties {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     // EtaCacheNodeImpl -> construct -> [ init(): caches.init ->  raftNode.connect - caches.connect() ]
@@ -77,34 +78,34 @@ class CacheManagerImpl(
     }
 
     override fun <K : Any?, V : Any?> getCache(cacheName: String?, keyType: Class<K>?, valueType: Class<V>?): Cache<K, V> {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun <K : Any?, V : Any?> getCache(cacheName: String?): Cache<K, V> {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun getCacheNames(): MutableIterable<String> {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun destroyCache(cacheName: String?) {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun enableManagement(cacheName: String?, enabled: Boolean) {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun enableStatistics(cacheName: String?, enabled: Boolean) {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun isClosed(): Boolean {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun <T : Any?> unwrap(clazz: Class<T>?): T {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 }

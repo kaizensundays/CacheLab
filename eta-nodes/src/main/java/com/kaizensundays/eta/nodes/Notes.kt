@@ -1,5 +1,7 @@
 package com.kaizensundays.eta.nodes
 
+import com.kaizensundays.eta.context.notImplemented
+
 /**
  * Created: Sunday 2/9/2025, 11:20 AM Eastern Time
  *
@@ -18,11 +20,11 @@ interface Initiator {
 // Session
 class SessionInitiator(producer: Producer) : Initiator {
     override fun connect() {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun disconnect() {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 }
 

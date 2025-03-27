@@ -1,5 +1,6 @@
 package com.kaizensundays.eta.cache
 
+import com.kaizensundays.eta.context.notImplemented
 import com.kaizensundays.eta.raft.RaftNode
 import java.net.URI
 import java.util.*
@@ -21,15 +22,15 @@ class CachingProvider : javax.cache.spi.CachingProvider {
     private val cacheManagers: MutableMap<ClassLoader, ConcurrentMap<URI, AtomicReference<CacheManager>>> = WeakHashMap()
 
     override fun close() {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun close(classLoader: ClassLoader?) {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun close(uri: URI?, classLoader: ClassLoader?) {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun getCacheManager(uri: URI?, classLoader: ClassLoader?, properties: Properties): CacheManager? {
@@ -72,7 +73,7 @@ class CachingProvider : javax.cache.spi.CachingProvider {
     }
 
     override fun getCacheManager(): CacheManager {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun getDefaultClassLoader(): ClassLoader {
@@ -84,11 +85,11 @@ class CachingProvider : javax.cache.spi.CachingProvider {
     }
 
     override fun getDefaultProperties(): Properties {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     override fun isSupported(optionalFeature: OptionalFeature?): Boolean {
-        TODO("Not yet implemented")
+        notImplemented()
     }
 
     fun createNode(): RaftNode {
