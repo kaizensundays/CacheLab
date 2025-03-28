@@ -25,6 +25,9 @@ import java.util.concurrent.TimeUnit
  *
  * @author Sergey Chuykov
  */
+@SuppressWarnings(
+    "kotlin:S6518", // set []
+)
 class JGroupsStateMachine<K, V>(private val ch: JChannel, raftHandle: RaftHandle? = null) : RaftStateMachine<K, V>, StateMachine {
 
     companion object {
