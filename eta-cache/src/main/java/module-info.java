@@ -8,7 +8,6 @@ module jgroups.cache {
     exports com.kaizensundays.eta.cache;
     exports com.kaizensundays.eta.raft;
 
-    requires java.base;
     requires kotlin.stdlib;
     requires org.slf4j;
     requires cache.api;

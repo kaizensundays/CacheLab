@@ -44,7 +44,7 @@ class JGroupsStateMachine<K, V>(private val ch: JChannel, raftHandle: RaftHandle
 
     internal val map: ConcurrentMap<K, V> = ConcurrentHashMap()
 
-    // timeout (ms) to wait for a majority to ack a write
+    // timeout (ms) to wait for a majority to ack
     private var replicationTimeout: Long = 20000
 
     // If true, reads are served locally without going through RAFT.
@@ -72,7 +72,7 @@ class JGroupsStateMachine<K, V>(private val ch: JChannel, raftHandle: RaftHandle
      * applied with callback [StateMachine.apply].
      *
      * @param key The key to be added.
-     * @param val The value to be added
+     * @param value The value to be added
      * @return Null, or the previous value associated with key (if present)
      */
     @Throws(Exception::class)
@@ -242,7 +242,7 @@ class JGroupsStateMachine<K, V>(private val ch: JChannel, raftHandle: RaftHandle
     }
 
     @Throws(Exception::class)
-    protected fun invoke(command: Byte, key: K, value: V?, ignoreReturnValue: Boolean, params: List<Any> = emptyList()): V? {
+    private fun invoke(command: Byte, key: K, value: V?, ignoreReturnValue: Boolean, params: List<Any> = emptyList()): V? {
         val out = ByteArrayDataOutputStream(256)
         try {
             out.writeByte(command.toInt())
