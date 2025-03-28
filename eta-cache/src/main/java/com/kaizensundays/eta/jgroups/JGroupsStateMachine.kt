@@ -161,11 +161,9 @@ class JGroupsStateMachine<K, V>(private val ch: JChannel, raftHandle: RaftHandle
             var removed = false
             synchronized(map) {
                 val entry = map[key]
-                if (entry is Value<*>) {
-                    if (condition.apply(entry, arrayOf(before))) {
-                        oldValue = map.remove(key)
-                        removed = true
-                    }
+                if (entry is Value<*> && condition.apply(entry, arrayOf(before))) {
+                    oldValue = map.remove(key)
+                    removed = true
                 }
             }
             if (removed) {

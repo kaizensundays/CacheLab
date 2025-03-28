@@ -31,7 +31,7 @@ class CacheManagerImpl(
         if (uri == cachingProvider.defaultURI) {
 
             val conf = EtaNodeConfiguration()
-            conf.nodeName = "T" // UUID.randomUUID().toString()
+            conf.nodeName = "T"
             conf.members = mutableListOf(conf.nodeName)
 
             node = Context.cacheNode(conf)
@@ -64,6 +64,7 @@ class CacheManagerImpl(
 
     // EtaCacheNodeImpl -> construct -> [ init(): caches.init ->  raftNode.connect - caches.connect() ]
 
+    @Suppress("UNCHECKED_CAST")
     override fun <K : Any?, V : Any?, C : Configuration<K, V>> createCache(cacheName: String?, configuration: C): Cache<K, V>? {
 
         val cacheConf: EtaCacheConfiguration<K, V> = configuration as EtaCacheConfiguration<K, V>

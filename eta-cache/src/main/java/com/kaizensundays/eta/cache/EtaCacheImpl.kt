@@ -185,7 +185,6 @@ class EtaCacheImpl<K, V>(
         rsm.addStateEventListener { event ->
             when (event.type) {
                 StateEventType.Put -> {
-                    //logger.info("-- put({}, {}) -> {}\n", event.key, event.value?.value, event.oldValue?.value)
                     event.key?.let { touch(event) }
                 }
 

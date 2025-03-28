@@ -5,6 +5,9 @@ package com.kaizensundays.eta.raft
  *
  * @author Sergey Chuykov
  */
+@SuppressWarnings(
+    "kotlin:S6514" // interface delegation using "by"
+)
 enum class Conditions(private val condition: Condition) : Condition {
 
     IF_TOUCHED_BEFORE({ entry, params ->

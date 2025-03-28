@@ -86,17 +86,14 @@ open class CacheBenchmark : BenchmarkSupport() {
             log("Stopped")
         }, "shutdown").start()
 
-        //shutdown(3)
     }
 
     @Benchmark
     @OperationsPerInvocation(1)
     open fun put(): String {
         val i = (++index % NUM_OF_KEYS).toInt()
-        //println("index=$index")
         val key = keys[i]
         cache.put(key, key)
-        //sleep(10)
         return key
     }
 
