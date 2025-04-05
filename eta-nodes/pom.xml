@@ -188,6 +188,8 @@
                                         <containerNamePattern>%a</containerNamePattern>
                                         <env>
                                             <SERVER_PORT>${SERVER_PORT}</SERVER_PORT>
+                                            <JMX_PORT>${JMX_PORT}</JMX_PORT>
+                                            <RMI_PORT>${RMI_PORT}</RMI_PORT>
                                             <JGROUPS_RAFT_MEMBERS>${JGROUPS_RAFT_MEMBERS}</JGROUPS_RAFT_MEMBERS>
                                             <JGROUPS_RAFT_NODE_NAME>${JGROUPS_RAFT_NODE_NAME}</JGROUPS_RAFT_NODE_NAME>
                                         </env>
@@ -198,6 +200,8 @@
                                         </volumes>
                                         <ports>
                                             <port>${CONTAINER_SERVER_PORT}:${SERVER_PORT}</port>
+                                            <port>${EXT_JMX_PORT}:${JMX_PORT}</port>
+                                            <port>${EXT_RMI_PORT}:${RMI_PORT}</port>
                                         </ports>
                                     </run>
                                 </image>
