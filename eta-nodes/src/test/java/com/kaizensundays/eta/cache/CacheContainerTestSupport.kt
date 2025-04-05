@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit
  *
  * @author Sergey Chuykov
  */
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class CacheContainerTestSupport {
 
     companion object {
@@ -34,28 +35,40 @@ abstract class CacheContainerTestSupport {
         const val KUBE_HOST = "Nevada"
 
         const val SERVER_PORT = 7701
-        val jmxPort: Int = Integer.valueOf(System.getProperty("eta.jmx.port", "0"))
+        const val JMX_PORT = 9001
+        const val EXT_JMX_PORT_BASE = 30001
+        const val RMI_PORT_BASE = 30011
+        const val JMX_ENABLED = true
+
         const val JGROUPS_RAFT_MEMBERS = "A,B,C"
 
-        private val env = mapOf(
+        fun rmiPort(index: Int) = RMI_PORT_BASE + index
+
+        val env = mapOf(
             0 to mutableMapOf(
                 "SERVER_PORT" to SERVER_PORT.toString(),
+                "JMX_PORT" to JMX_PORT.toString(),
+                "RMI_PORT" to rmiPort(0).toString(),
                 "JGROUPS_RAFT_MEMBERS" to JGROUPS_RAFT_MEMBERS,
                 "JGROUPS_RAFT_NODE_NAME" to "A",
             ),
             1 to mutableMapOf(
                 "SERVER_PORT" to SERVER_PORT.toString(),
+                "JMX_PORT" to JMX_PORT.toString(),
+                "RMI_PORT" to rmiPort(1).toString(),
                 "JGROUPS_RAFT_MEMBERS" to JGROUPS_RAFT_MEMBERS,
                 "JGROUPS_RAFT_NODE_NAME" to "B",
             ),
             2 to mutableMapOf(
                 "SERVER_PORT" to SERVER_PORT.toString(),
+                "JMX_PORT" to JMX_PORT.toString(),
+                "RMI_PORT" to rmiPort(2).toString(),
                 "JGROUPS_RAFT_MEMBERS" to JGROUPS_RAFT_MEMBERS,
                 "JGROUPS_RAFT_NODE_NAME" to "C",
             ),
         )
 
-        private const val IMAGE = "localhost:32000/eta-cache:latest"
+        const val IMAGE = "localhost:32000/eta-cache:latest"
 
         val containers: List<GenericContainer<*>> = List(3) {
             GenericContainer<Nothing>(DockerImageName.parse(IMAGE))
@@ -86,17 +99,22 @@ abstract class CacheContainerTestSupport {
                 executor.execute {
                     val name = "eta-cache$n"
                     container.withNetwork(network)
-                        .withExposedPorts(SERVER_PORT)
+                        .withExposedPorts(SERVER_PORT, JMX_PORT, rmiPort(n))
                         .withExtraHost(KUBE_HOST, kubeIp)
                         .withEnv(env[n])
-                        .waitingFor(Wait.forHttp("/ping").withStartupTimeout(Duration.ofSeconds(100)))
+                        .waitingFor(
+                            Wait.forHttp("/ping")
+                                .forPort(SERVER_PORT)
+                                .withStartupTimeout(Duration.ofSeconds(100))
+                        )
                         .withCreateContainerCmdModifier { cmd ->
                             cmd.withName(name)
-                            cmd.withPortSpecs()
                         }
-                    if (jmxPort > 0) {
-                        val externalJmxPort = 20_000 + jmxPort + n
-                        container.portBindings = listOf("$externalJmxPort:${jmxPort}")
+                    if (JMX_ENABLED) {
+                        val externalJmxPort = EXT_JMX_PORT_BASE + n
+                        val rmiPort = rmiPort(n)
+                        container.portBindings = listOf("$externalJmxPort:${JMX_PORT}", "$rmiPort:$rmiPort")
+                        println()
                     }
                     container.start()
                     logger.info("Started - $name")
@@ -121,7 +139,7 @@ abstract class CacheContainerTestSupport {
 
         return containers.map { container ->
             val port = container.getMappedPort(SERVER_PORT)
-            val jmxPort = if (jmxPort > 0) container.getMappedPort(jmxPort) else 0
+            val jmxPort = if (JMX_ENABLED) container.getMappedPort(JMX_PORT) else 0
             logger.info("port={} jmxPort={}", port, jmxPort)
             val loadBalancer = DefaultLoadBalancer(listOf(Instance(KUBE_HOST, port)))
             WebFluxProducer(loadBalancer)
