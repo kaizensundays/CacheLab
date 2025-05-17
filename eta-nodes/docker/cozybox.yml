@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cozybox
+  labels:
+    instance: cozybox
+spec:
+  containers:
+    - name: cozybox
+      image: localhost:32000/eta-cache
+      imagePullPolicy: Always
+      ports:
+        - containerPort: 7701
+          name: http
+      command: ["sh", "-c"]
+      args:
+        - |
+          cd /opt
+          chmod ug+x *.sh
+          ./init.sh
+          echo "CozyBox started"
+          sleep 1000s
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 10
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: cozybox
+spec:
+  selector:
+    instance: cozybox
+  ports:
+    - name: http
+      port: 7701
+      nodePort: 30711
+  type: NodePort
