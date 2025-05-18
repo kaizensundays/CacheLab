@@ -1,13 +1,14 @@
 package com.kaizensundays.eta.cache
 
+import com.kaizensundays.eta.grpc.CacheValue
 import com.kaizensundays.eta.grpc.EndpointGrpc
 import com.kaizensundays.eta.grpc.GetRequest
 import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import io.grpc.stub.StreamObserver
 import org.junit.jupiter.api.Test
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
+import reactor.core.publisher.Flux
+import java.time.Duration
 
 /**
  * Created: Sunday 5/18/2025, 1:29 PM Eastern Time
@@ -16,44 +17,52 @@ import java.util.concurrent.TimeUnit
  */
 class GrpcServiceRemoteTest {
 
+    fun getStream(request: GetRequest, channel: ManagedChannel): Flux<CacheValue> {
+
+        return Flux.create { sink ->
+
+            val stub = EndpointGrpc.newStub(channel)
+
+            stub.getStream(request, object : StreamObserver<CacheValue> {
+                override fun onNext(cacheValue: CacheValue) {
+                    sink.next(cacheValue)
+                }
+
+                override fun onError(t: Throwable) {
+                    sink.error(t)
+                }
+
+                override fun onCompleted() {
+                    sink.complete()
+                }
+            })
+
+        }
+    }
+
     @Test
-    fun test() {
+    fun getStream() {
 
         val channel: ManagedChannel = ManagedChannelBuilder
             .forAddress("localhost", 7801)
             .usePlaintext()
             .build()
 
-        val stub = EndpointGrpc.newStub(channel)
-
         try {
-            val latch = CountDownLatch(1)
-
             val request = GetRequest.newBuilder().build()
 
-            stub.getStream(request, object : StreamObserver<com.kaizensundays.eta.grpc.CacheValue> {
-                override fun onNext(cacheValue: com.kaizensundays.eta.grpc.CacheValue) {
-                    println("Received: ${cacheValue.value}")
+            getStream(request, channel)
+                .take(4)
+                .doOnNext { cacheValue ->
+                    println("Received: ${cacheValue.value.toStringUtf8()}")
                 }
-
-                override fun onError(t: Throwable) {
-                    println("Error consuming stream: ${t.message}")
-                }
-
-                override fun onCompleted() {
-                    println("Stream completed")
-                    latch.countDown()
-                }
-            })
-
-            latch.await(30, TimeUnit.SECONDS)
+                .blockLast(Duration.ofSeconds(30))
         } catch (e: Exception) {
-            println("Error consuming stream: ${e.message}")
+            println("Error: ${e.message}")
         } finally {
             channel.shutdown()
         }
 
     }
-
 
 }
