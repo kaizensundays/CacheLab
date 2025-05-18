@@ -73,4 +73,7 @@
 
     <bean id="webSocketHandlerAdapter" class="org.springframework.web.reactive.socket.server.support.WebSocketHandlerAdapter"/>
 
+    <bean id="grpcService" class="com.kaizensundays.eta.cache.GrpcService" lazy-init="false">
+    </bean>
+
 </beans>

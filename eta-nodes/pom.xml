@@ -17,6 +17,11 @@
             <artifactId>eta-cache</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.kaizensundays.cachelab</groupId>
+            <artifactId>eta-messaging</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Log4j -->
         <dependency>

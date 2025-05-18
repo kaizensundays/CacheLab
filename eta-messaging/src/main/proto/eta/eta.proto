@@ -18,3 +18,26 @@ message Pong {
 service Greeter {
   rpc ping (Ping) returns (Pong) {}
 }
+
+message Msg {
+  string type = 1;
+  int32 seqNum = 2;
+}
+
+message Response {
+  Msg msg = 1;
+  int32 code = 2;
+  string text = 3;
+}
+
+message CacheValue {
+  Response response = 1;
+  bytes value = 2;
+}
+
+message GetRequest {
+}
+
+service Endpoint {
+  rpc GetStream(GetRequest) returns (stream CacheValue) {}
+}
