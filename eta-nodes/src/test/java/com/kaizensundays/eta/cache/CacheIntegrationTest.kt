@@ -2,6 +2,7 @@ package com.kaizensundays.eta.cache
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.kaizensundays.eta.cache.messages.CacheValue
 import com.kaizensundays.eta.context.Logger
 import com.kaizensundays.messaging.DefaultLoadBalancer
 import com.kaizensundays.messaging.Instance

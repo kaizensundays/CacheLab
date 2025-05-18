@@ -1,5 +1,6 @@
 package com.kaizensundays.eta.cache
 
+import com.kaizensundays.eta.cache.messages.CacheValue
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any

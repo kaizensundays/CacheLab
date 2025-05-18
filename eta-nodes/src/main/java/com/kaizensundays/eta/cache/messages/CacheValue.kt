@@ -1,4 +1,7 @@
-package com.kaizensundays.eta.cache
+package com.kaizensundays.eta.cache.messages
+
+import com.kaizensundays.eta.cache.MsgType
+import com.kaizensundays.eta.cache.Response
 
 /**
  * Created: Sunday 2/16/2025, 12:57 PM Eastern Time

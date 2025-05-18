@@ -2,6 +2,7 @@ package com.kaizensundays.eta.cache
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.json.JsonMapper
+import com.kaizensundays.eta.cache.messages.CacheValue
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
